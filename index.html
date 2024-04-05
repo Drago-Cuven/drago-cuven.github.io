@@ -2,13 +2,22 @@
 <html lang="en-US">
     <head>
         <meta charset="UTF-8">
-        <meta http-equiv="refresh" content="0; url=https://drago-cuven.github.io/Dragonian%20Terminal/">
-        <script type="text/javascript">
-            window.location.href = "https://drago-cuven.github.io/Dragonian%20Terminal/"
+        <!-- this is an html comment -->
+        <!-- i don't know what this v does so i removed it to be safe -->
+        <!-- <meta http-equiv="refresh" content="0; url=https://drago-cuven.github.io/Dragonian%20Terminal/"> -->
+        <script type="text/javascript" defer>
+            // this is a comment :D
+            //window.location.href = "https://drago-cuven.github.io/Dragonian%20Terminal/"
+            let pageSource = new URL(window.location.href)
+            let host = pageSource.host
+            window.location.href = "/Dragonian%20Terminal"
+            let redirect = document.getElementById("redirect")
+            redirect.href = host + "/Dragonian%20Terminal"
+
         </script>
         <title>Page Redirection</title>
     </head>
     <body>
         <!-- Note: don't tell people to `click` the link, just tell them that it is a link. -->
-        If you are not redirected automatically, follow this <a href='https://drago-cuven.github.io/Dragonian%20Terminal/'>The Dragonian Terminal</a>.
+        If you are not redirected automatically, follow this <a href='this page does not exist' id="redirect">The Dragonian Terminal</a>.
     </body>
