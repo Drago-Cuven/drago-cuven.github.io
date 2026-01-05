@@ -1,23 +1,29 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
     <head>
-        <meta charset="UTF-8">
-        <!-- this is an html comment -->
-        <!-- i don't know what this v does so i removed it to be safe -->
-        <!-- <meta http-equiv="refresh" content="0; url=https://drago-cuven.github.io/DragonianTerminal/"> -->
-        <script type="text/javascript" defer>
-            // this is a comment :D
-            //window.location.href = "https://drago-cuven.github.io/DragonianTerminal/"
-            let pageSource = new URL(window.location.href)
-            let host = pageSource.host
-            window.location.href = "/DragonianTerminal"
-            let redirect = document.getElementById("redirect")
-            redirect.href = host + "/DragonianTerminal"
-
-        </script>
-        <title>Page Redirection</title>
+        <base target="_self" href="https://drago-cuven.github.io/" />
+        
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta http-equiv="refresh" content="0; url=/DragonianTerminal/" />
+        <title>Redirecting to The Dragonian Terminal</title>
     </head>
     <body>
-        <!-- Note: don't tell people to `click` the link, just tell them that it is a link. -->
-        If you are not redirected automatically, follow this <a href='this page does not exist' id="redirect">The Dragonian Terminal</a>.
+        <p aria-label="Redirect link to the actual website.">
+            <a id="redirect" href="/DragonianTerminal/" title="Please click this to use the actual website.">
+                If you are not redirected automatically please continue to The Dragonian Terminal by clicking this link.
+            </a>
+        </p>.
+        <script text="text/javascript">
+            if (window.document && window.setTimeout) {
+                window.setTimeout(function() {
+                    try {
+                        window.document.getElementById('redirect').click();
+                    } catch(error) {
+                        void error;
+                    }
+                }, 5000);
+            }
+        </script>
     </body>
+</html>
