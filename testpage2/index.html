@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DVD</title>
+    <style>
+        html, body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: black;
+        }
+
+```
+    #pfp {
+        position: absolute;
+        width: 150px;
+        height: 150px;
+        object-fit: contain;
+        user-select: none;
+        -webkit-user-drag: none;
+        will-change: transform;
+    }
+</style>
+```
+
+</head>
+<body>
+    <img id="pfp" src="pfp.png" alt="">
+
+```
+<script>
+    const pfp = document.getElementById("pfp");
+
+    let x = 0;
+    let y = 0;
+    let vx = 3;
+    let vy = 3;
+
+    function animate() {
+        const width = pfp.offsetWidth;
+        const height = pfp.offsetHeight;
+        const maxX = window.innerWidth - width;
+        const maxY = window.innerHeight - height;
+
+        x += vx;
+        y += vy;
+
+        if (x <= 0) {
+            x = 0;
+            vx = Math.abs(vx);
+        } else if (x >= maxX) {
+            x = maxX;
+            vx = -Math.abs(vx);
+        }
+
+        if (y <= 0) {
+            y = 0;
+            vy = Math.abs(vy);
+        } else if (y >= maxY) {
+            y = maxY;
+            vy = -Math.abs(vy);
+        }
+
+        pfp.style.transform = `translate(${x}px, ${y}px)`;
+
+        requestAnimationFrame(animate);
+    }
+
+    function startAudio(url) {
+        const audio = new Audio(url);
+        audio.loop = true;
+        audio.preload = "auto";
+
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioContext.createMediaElementSource(audio);
+        const processor = audioContext.createScriptProcessor(4096, 1, 1);
+
+        let inputBuffer = new Float32Array(0);
+        let outputBuffer = new Float32Array(0);
+        let readPosition = 0;
+
+        const pitchRatio = 1.15;
+
+        processor.onaudioprocess = event => {
+            const input = event.inputBuffer.getChannelData(0);
+            const output = event.outputBuffer.getChannelData(0);
+
+            const needed = Math.ceil(input.length * pitchRatio) + 2;
+            const combined = new Float32Array(inputBuffer.length + input.length);
+
+            combined.set(inputBuffer);
+            combined.set(input, inputBuffer.length);
+
+            const result = new Float32Array(output.length);
+            let position = readPosition;
+
+            for (let i = 0; i < result.length; i++) {
+                const index = Math.floor(position);
+                const fraction = position - index;
+
+                if (index + 1 >= combined.length) {
+                    break;
+                }
+
+                result[i] = combined[index] * (1 - fraction) + combined[index + 1] * fraction;
+                position += pitchRatio;
+            }
+
+            const consumed = Math.floor(position);
+            readPosition = position - consumed;
+            inputBuffer = combined.slice(Math.max(0, consumed));
+
+            output.set(result);
+        };
+
+        source.connect(processor);
+        processor.connect(audioContext.destination);
+
+        const begin = () => {
+            audioContext.resume();
+            audio.play().catch(() => {});
+        };
+
+        document.addEventListener("click", begin, { once: true });
+        document.addEventListener("keydown", begin, { once: true });
+
+        audio.addEventListener("canplay", begin, { once: true });
+    }
+
+    fetch("music.mp3", { method: "HEAD" })
+        .then(response => {
+            if (response.ok) {
+                startAudio("music.mp3");
+            } else {
+                return fetch("music.ogg", { method: "HEAD" }).then(response => {
+                    if (response.ok) {
+                        startAudio("music.ogg");
+                    }
+                });
+            }
+        })
+        .catch(() => {
+            fetch("music.ogg", { method: "HEAD" })
+                .then(response => {
+                    if (response.ok) {
+                        startAudio("music.ogg");
+                    }
+                })
+                .catch(() => {});
+        });
+
+    animate();
+</script>
+```
+
+</body>
+</html>
